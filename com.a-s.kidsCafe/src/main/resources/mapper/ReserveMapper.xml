@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.kidsCafe.DAO.ReserveMapper">
+
+<select id="ReserveSpace" parameterType="Reserve" resultType="ReserveSpace">
+select to_char(resDate,'YYYYMMDD') as resDate,resTime
+from timeSchedule
+where resdate > sysdate
+</select>
+
+<insert id="indiviConfirm" parameterType="Reserve">
+<!-- <selectKey keyProperty="resNum" resultType="int" order="BEFORE">
+select resnumseq.nextval from dual
+</selectKey> -->
+insert all 
+into RESERVEMAIN values(#{resNum},#{date},#{resTime},#{useTime})
+into RESERVESUB(resnum,resname,mail,phone) values(#{resNum},#{resName},#{mail},#{phone})
+into RESERVEINFO VALUES(#{resNum},#{resAdult},#{resChild})
+select * from dual
+</insert>
+
+<select id="GetResNum" resultType="int">
+	select resnumseq.nextval from dual
+</select>
+
+<insert id="timeScheduleInput" parameterType="ReserveSpace">
+insert into timeschedule(dummynum,resDate,resTime)
+values (timeSche_seq.nextval,#{resDate},#{resTime})
+</insert>
+
+<select id="findReserve" parameterType="int" resultType="Reserve">
+select
+	 r1.RESNUM,r1.RESDATE,r1.RESTIME,r1.USETIME,r2.RESNAME,r2.PHONE,r2.MAIL,r2.INTIME,r3.RESCHILD,r3.RESADULT 
+	 from reservemain r1,reservesub r2,reserveinfo r3 
+	 where (r1.resnum = r2.resnum ) 
+	 and (r1.resnum = r3.resnum) 
+	 and (r1.resnum = #{resNum});
+
+</select>
+
+
+
+
+</mapper>
